@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#140d15">
+<meta name="description" content="Noctuelle — music for your own world. Discover and listen to music.">
 <title>Noctuelle — Music for your own world</title>
 
 <style>
@@ -68,6 +69,7 @@ header {
   height: 43px;
   display: grid;
   place-items: center;
+  flex-shrink: 0;
 }
 main { width: min(100%, 700px); margin: auto; padding: 0 20px; }
 .search-area { padding: 6px 0 22px; }
@@ -102,6 +104,7 @@ main { width: min(100%, 700px); margin: auto; padding: 0 20px; }
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
   margin: 16px 0 12px;
 }
 .section-heading h2 { font-size: 14px; margin: 0; }
@@ -157,7 +160,7 @@ main { width: min(100%, 700px); margin: auto; padding: 0 20px; }
 }
 .cover-wrap img { width: 100%; height: 100%; object-fit: cover; }
 .song-meta { text-align: center; }
-.song-meta h1 { margin: 0; font-size: clamp(20px, 5vw, 27px); letter-spacing: -.8px; }
+.song-meta h1 { margin: 0; font-size: clamp(20px, 5vw, 27px); letter-spacing: -.8px; overflow-wrap: anywhere; }
 .song-meta p { margin: 8px 0 18px; color: var(--muted); font-size: 13px; }
 .player-actions { display: flex; justify-content: center; gap: 18px; align-items: center; }
 .main-play {
@@ -174,7 +177,7 @@ main { width: min(100%, 700px); margin: auto; padding: 0 20px; }
 input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
 .time-row { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); }
 .volume-row { display: flex; gap: 10px; align-items: center; margin-top: 12px; }
-.volume-row input { flex: 1; }
+.volume-row input { flex: 1; min-width: 0; }
 .lyrics {
   min-height: 290px;
   padding: 25px 18px;
@@ -183,7 +186,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer;
   border: 1px solid var(--line);
   background: rgba(255,255,255,.035);
 }
-.lyrics-top { display: flex; justify-content: space-between; align-items: center; }
+.lyrics-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .lyrics-top h2 { margin: 0; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; }
 .lyrics-lines { text-align: left; padding: 28px 0 12px; }
 .lyrics-lines p {
@@ -192,6 +195,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer;
   font-weight: 800;
   letter-spacing: -.8px;
   line-height: 1.25;
+  overflow-wrap: anywhere;
 }
 .lyrics-lines .dim { color: #ffffff42; }
 .lyrics-lines .current { color: white; }
@@ -215,7 +219,7 @@ footer {
   width: min(100%, 660px);
   margin: 0 auto;
 }
-.mini-player img { width: 42px; height: 42px; border-radius: 9px; object-fit: cover; }
+.mini-player img { width: 42px; height: 42px; border-radius: 9px; object-fit: cover; background: #382431; }
 .mini-info { flex: 1; min-width: 0; }
 .mini-info strong, .mini-info small {
   display: block;
@@ -226,6 +230,7 @@ footer {
 .mini-info strong { font-size: 12px; }
 .mini-info small { font-size: 10px; color: var(--muted); margin-top: 4px; }
 .mini-player button { border: 0; background: transparent; font-size: 19px; padding: 8px; }
+button:disabled { opacity: .45; cursor: not-allowed; }
 @media(min-width:600px) {
   main { padding: 0 30px; }
   .player { padding: 25px; }
@@ -253,12 +258,12 @@ footer {
       <input id="searchInput" type="search" placeholder="Songs, artists, moods…" autocomplete="off">
       <button type="submit">Search</button>
     </form>
-    <p class="status" id="status" role="status">Connecting to Audius…</p>
+    <p class="status" id="status" role="status">Connecting to Free To Use…</p>
   </section>
 
   <section id="resultsSection">
     <div class="section-heading">
-      <h2 id="resultsTitle">Trending on Audius</h2>
+      <h2 id="resultsTitle">Popular on Free To Use</h2>
       <span>OPEN MUSIC</span>
     </div>
     <div class="results" id="results"></div>
@@ -266,11 +271,11 @@ footer {
 
   <section class="player" aria-label="Music player">
     <div class="eyebrow now-label">now playing</div>
-    <div class="cover-wrap"><img id="cover" alt="Album artwork"></div>
+    <div class="cover-wrap"><img id="cover" alt="Track artwork"></div>
 
     <div class="song-meta">
       <h1 id="songTitle">Choose a track</h1>
-      <p id="songArtist">Discover music on Audius</p>
+      <p id="songArtist">Discover music on Free To Use</p>
     </div>
 
     <div class="player-actions">
@@ -307,7 +312,7 @@ footer {
     </div>
 
     <p class="lyrics-note" id="lyricsNote">
-      Synchronized lyrics need a separate licensed lyrics source.
+      Lyrics are not supplied as synchronized text by this music API.
     </p>
   </section>
 
@@ -317,6 +322,14 @@ footer {
       <span id="queueCount">0 TRACKS</span>
     </div>
     <div class="results" id="queue"></div>
+  </section>
+
+  <section id="favoritesSection" class="queue">
+    <div class="section-heading">
+      <h2>Your favorites</h2>
+      <span id="favoriteCount">0 SAVED</span>
+    </div>
+    <div class="results" id="favoritesList"></div>
   </section>
 </main>
 
@@ -338,12 +351,10 @@ footer {
 (() => {
   "use strict";
 
-  const API_BASE = "https://api.audius.co/v1";
+  const API_BASE = "https://api.freetouse.com/v3";
   const APP_NAME = "Noctuelle";
-
-  // Optional: enter a rotated Audius API key between the quotes.
-  // Never place a Bearer token or other private credentials here.
-  const AUDIUS_API_KEY = "";
+  const FAVORITES_KEY = "noctuelle_freetouse_favorites_v1";
+  const VOLUME_KEY = "noctuelle_volume_v1";
 
   const $ = id => document.getElementById(id);
   const audio = $("audio");
@@ -353,9 +364,8 @@ footer {
   let currentIndex = -1;
   let currentTrack = null;
   let isPlaying = false;
-
-  // Favorites last only until this page is refreshed.
-  const favoriteIds = new Set();
+  let requestNumber = 0;
+  let playRequestNumber = 0;
 
   function setStatus(message) {
     $("status").textContent = message;
@@ -367,19 +377,66 @@ footer {
       String(seconds % 60).padStart(2, "0");
   }
 
-  function artworkUrl(track) {
-    const art = track?.artwork;
-    if (typeof art === "string") return art;
-    return art?.["480x480"] || art?.["150x150"] ||
-           art?.["1000x1000"] || "";
-  }
-
   function trackTitle(track) {
     return track?.title || "Untitled track";
   }
 
   function artistName(track) {
-    return track?.user?.name || track?.artist_name || "Unknown artist";
+    const artists = track?.artists;
+
+    if (Array.isArray(artists) && artists.length) {
+      const names = artists
+        .map(item => Array.isArray(item) ? item[1]?.name : item?.name)
+        .filter(Boolean);
+
+      if (names.length) return names.join(", ");
+    }
+
+    return "Unknown artist";
+  }
+
+  function artworkUrl(track) {
+    const thumbnails = track?.thumbnails;
+
+    if (typeof thumbnails === "string") return thumbnails;
+
+    return thumbnails?.md ||
+      thumbnails?.lg ||
+      thumbnails?.sm ||
+      thumbnails?.xl ||
+      "";
+  }
+
+  function audioUrl(track) {
+    return track?.files?.mp3 || "";
+  }
+
+  function readFavorites() {
+    try {
+      const stored = JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]");
+      return Array.isArray(stored) ? stored : [];
+    } catch {
+      return [];
+    }
+  }
+
+  let favorites = readFavorites();
+
+  function saveFavorites() {
+    try {
+      localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+    } catch (error) {
+      console.warn("Favorites could not be saved.", error);
+      setStatus("Your browser couldn't save favorites.");
+    }
+  }
+
+  function updateFavoriteButton() {
+    const saved = currentTrack &&
+      favorites.some(track => String(track.id) === String(currentTrack.id));
+
+    $("favorite").textContent = saved ? "♥" : "♡";
+    $("favorite").setAttribute("aria-pressed", saved ? "true" : "false");
   }
 
   function safeImage(image, url) {
@@ -387,6 +444,7 @@ footer {
       image.onerror = null;
       image.removeAttribute("src");
     };
+
     if (url) image.src = url;
     else image.removeAttribute("src");
   }
@@ -394,30 +452,29 @@ footer {
   async function apiGet(path, params = {}) {
     const url = new URL(API_BASE + path);
 
-    url.searchParams.set("app_name", APP_NAME);
-
-    if (AUDIUS_API_KEY.trim()) {
-      url.searchParams.set("api_key", AUDIUS_API_KEY.trim());
-    }
-
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== "") {
-        url.searchParams.set(key, value);
+        url.searchParams.set(key, String(value));
       }
     });
 
     const response = await fetch(url.toString(), {
+      method: "GET",
       headers: { "Accept": "application/json" }
     });
 
     if (!response.ok) {
-      throw new Error("Audius returned HTTP " + response.status);
+      throw new Error("Free To Use returned HTTP " + response.status);
     }
 
     const json = await response.json();
 
-    if (json.data === undefined) {
-      throw new Error("Unexpected response from Audius");
+    if (json.ok === false) {
+      throw new Error(json.error || "The music API returned an error.");
+    }
+
+    if (!Object.prototype.hasOwnProperty.call(json, "data")) {
+      throw new Error("Unexpected response from Free To Use.");
     }
 
     return json.data;
@@ -427,9 +484,11 @@ footer {
     const button = document.createElement("button");
     button.className = "track-row";
     button.type = "button";
+    button.setAttribute("aria-label", "Play " + trackTitle(track));
 
     const image = document.createElement("img");
     image.alt = "";
+    image.loading = "lazy";
     safeImage(image, artworkUrl(track));
 
     const info = document.createElement("span");
@@ -450,6 +509,7 @@ footer {
 
     button.append(image, info, play);
     button.addEventListener("click", () => onSelect(track));
+
     return button;
   }
 
@@ -469,7 +529,9 @@ footer {
     list.forEach(track => {
       root.appendChild(makeTrackRow(track, selectedTrack => {
         queue = tracks.slice();
-        currentIndex = queue.findIndex(item => item.id === selectedTrack.id);
+        currentIndex = queue.findIndex(
+          item => String(item.id) === String(selectedTrack.id)
+        );
         renderQueue();
         playTrack(selectedTrack);
       }));
@@ -481,26 +543,91 @@ footer {
     root.replaceChildren();
     $("queueCount").textContent = queue.length + " TRACKS";
 
+    if (!queue.length) {
+      const message = document.createElement("p");
+      message.className = "status";
+      message.textContent = "Your listening queue is empty.";
+      root.appendChild(message);
+      return;
+    }
+
     queue.forEach(track => {
       root.appendChild(makeTrackRow(track, selectedTrack => {
-        currentIndex = queue.findIndex(item => item.id === selectedTrack.id);
+        currentIndex = queue.findIndex(
+          item => String(item.id) === String(selectedTrack.id)
+        );
+        playTrack(selectedTrack);
+      }));
+    });
+  }
+
+  function renderFavorites() {
+    const root = $("favoritesList");
+    root.replaceChildren();
+    $("favoriteCount").textContent = favorites.length + " SAVED";
+
+    if (!favorites.length) {
+      const message = document.createElement("p");
+      message.className = "status";
+      message.textContent = "Tap ♡ while listening to save a favorite.";
+      root.appendChild(message);
+      return;
+    }
+
+    favorites.forEach(track => {
+      root.appendChild(makeTrackRow(track, selectedTrack => {
+        const exists = queue.some(
+          item => String(item.id) === String(selectedTrack.id)
+        );
+
+        if (!exists) queue.push(selectedTrack);
+
+        currentIndex = queue.findIndex(
+          item => String(item.id) === String(selectedTrack.id)
+        );
+
+        renderQueue();
         playTrack(selectedTrack);
       }));
     });
   }
 
   async function loadTrending() {
-    setStatus("Finding music on Audius…");
+    const thisRequest = ++requestNumber;
+    setStatus("Finding music on Free To Use…");
 
     try {
-      const data = await apiGet("/tracks/trending", { limit: 12 });
-      renderResults(Array.isArray(data) ? data : []);
-      $("resultsTitle").textContent = "Trending on Audius";
-      setStatus("Choose a track to start listening.");
+      const data = await apiGet("/music/tracks/all", {
+        limit: 15,
+        offset: 0,
+        order: "plays",
+        sort: "desc"
+      });
+
+      if (thisRequest !== requestNumber) return;
+
+      const list = Array.isArray(data) ? data : [];
+
+      renderResults(list);
+      $("resultsTitle").textContent = "Popular on Free To Use";
+
+      setStatus(list.length
+        ? "Choose a track to start listening."
+        : "No tracks were returned. Try searching.");
     } catch (error) {
-      console.error(error);
-      setStatus("Couldn't load Audius. Try again later.");
+      if (thisRequest !== requestNumber) return;
+
+      console.error("Free To Use loading error:", error);
+      setStatus("Couldn't load music. Check your connection and try again.");
+
       $("results").replaceChildren();
+
+      const retry = document.createElement("button");
+      retry.className = "track-row";
+      retry.type = "button";
+      retry.textContent = "↻  Retry loading music";
+      retry.addEventListener("click", loadTrending);
+      $("results").appendChild(retry);
     }
   }
 
@@ -508,69 +635,54 @@ footer {
     const term = query.trim();
 
     if (!term) {
-      setStatus("Enter a song title or artist.");
+      setStatus("Enter a song title, artist, or music style.");
       return;
     }
+
+    const thisRequest = ++requestNumber;
 
     setStatus("Searching for “" + term + "”…");
     $("results").replaceChildren();
 
     try {
-      const data = await apiGet("/tracks/search", {
+      const data = await apiGet("/music/tracks/search", {
         query: term,
-        limit: 15
+        limit: 20,
+        offset: 0,
+        order: "plays",
+        sort: "desc"
       });
 
+      if (thisRequest !== requestNumber) return;
+
       const list = Array.isArray(data) ? data : [];
+
       renderResults(list);
       $("resultsTitle").textContent = "Search results";
+
       setStatus(list.length
         ? "Found " + list.length + " tracks."
         : "No tracks found. Try a different search.");
     } catch (error) {
-      console.error(error);
-      setStatus("Search failed. Audius may be temporarily unavailable.");
+      if (thisRequest !== requestNumber) return;
+
+      console.error("Free To Use search error:", error);
+      setStatus("Search failed. Please try again.");
+
+      const message = document.createElement("p");
+      message.className = "status";
+      message.textContent = "Check your internet connection and try again.";
+      $("results").replaceChildren(message);
     }
   }
 
-  async function playTrack(track) {
-    if (!track || !track.id) {
-      setStatus("This track doesn't have a playable ID.");
-      return;
-    }
-
-    currentTrack = track;
-    isPlaying = false;
-    updatePlayButtons();
-    setStatus("Loading " + trackTitle(track) + "…");
-
-    const streamUrl = new URL(
-      API_BASE + "/tracks/" + encodeURIComponent(track.id) + "/stream"
-    );
-    streamUrl.searchParams.set("app_name", APP_NAME);
-
-    if (AUDIUS_API_KEY.trim()) {
-      streamUrl.searchParams.set("api_key", AUDIUS_API_KEY.trim());
-    }
-
-    audio.pause();
-    audio.src = streamUrl.toString();
-    audio.load();
-
-    $("songTitle").textContent = trackTitle(track);
-    $("songArtist").textContent = artistName(track);
-    $("miniTitle").textContent = trackTitle(track);
-    $("miniArtist").textContent = artistName(track);
-
-    const art = artworkUrl(track);
-    safeImage($("cover"), art);
-    safeImage($("miniCover"), art);
-
-    $("lyricsLines").replaceChildren();
+  function setLyricsPlaceholder(track) {
+    const root = $("lyricsLines");
+    root.replaceChildren();
 
     const first = document.createElement("p");
     first.className = "dim";
-    first.textContent = "Let the music find you";
+    first.textContent = "Now listening to";
 
     const current = document.createElement("p");
     current.className = "current";
@@ -578,23 +690,74 @@ footer {
 
     const last = document.createElement("p");
     last.className = "dim";
-    last.textContent = "Sing along, in your own time.";
+    last.textContent = "Enjoy the music, in your own world.";
 
-    $("lyricsLines").append(first, current, last);
+    root.append(first, current, last);
+
     $("lyricsNote").textContent =
-      "Synchronized lyrics aren't included with this track. " +
-      "A separate authorized lyrics source is needed.";
+      "Synchronized lyrics aren't provided by Free To Use. " +
+      "Lyrics require a separate authorized source.";
+  }
 
+  async function playTrack(track) {
+    if (!track || !track.id) {
+      setStatus("This track doesn't have a valid ID.");
+      return;
+    }
+
+    const url = audioUrl(track);
+
+    if (!url) {
+      setStatus("No MP3 file is listed for this track.");
+      return;
+    }
+
+    const thisPlayRequest = ++playRequestNumber;
+
+    currentTrack = track;
+    isPlaying = false;
+    updatePlayButtons();
+    setStatus("Loading " + trackTitle(track) + "…");
+
+
+    audio.pause();
+    audio.removeAttribute("src");
+    audio.load();
+
+    $("songTitle").textContent = trackTitle(track);
+    $("songArtist").textContent = artistName(track);
+    $("miniTitle").textContent = trackTitle(track);
+    $("miniArtist").textContent = artistName(track);
+
+    safeImage($("cover"), artworkUrl(track));
+    safeImage($("miniCover"), artworkUrl(track));
+
+    $("seek").value = "0";
+    $("elapsed").textContent = "0:00";
+    $("duration").textContent = formatTime(track.duration);
+
+    setLyricsPlaceholder(track);
     updateFavoriteButton();
+
+    audio.src = url;
+    audio.load();
 
     try {
       await audio.play();
+
+      if (thisPlayRequest !== playRequestNumber) {
+        audio.pause();
+        return;
+      }
+
       isPlaying = true;
-      setStatus("Now playing from Audius.");
+      setStatus("Now playing on Noctuelle.");
     } catch (error) {
-      console.error(error);
+      if (thisPlayRequest !== playRequestNumber) return;
+
+      console.error("Playback error:", error);
       isPlaying = false;
-      setStatus("Tap Play to start, or try another track.");
+      setStatus("Playback couldn't start. Try another track or tap Play.");
     }
 
     updatePlayButtons();
@@ -603,9 +766,7 @@ footer {
   function updatePlayButtons() {
     $("playPause").textContent = isPlaying ? "Ⅱ" : "▶";
     $("miniPlay").textContent = isPlaying ? "Ⅱ" : "▶";
-    $("playPause").setAttribute(
-      "aria-label", isPlaying ? "Pause" : "Play"
-    );
+    $("playPause").setAttribute("aria-label", isPlaying ? "Pause" : "Play");
   }
 
   async function togglePlayback() {
@@ -615,27 +776,25 @@ footer {
     }
 
     try {
-      if (audio.paused) await audio.play();
-      else audio.pause();
+      if (audio.paused) {
+        await audio.play();
+      } else {
+        audio.pause();
+      }
     } catch (error) {
-      console.error(error);
+      console.error("Playback toggle error:", error);
       setStatus("Playback didn't start. Try selecting the track again.");
     }
   }
 
   function playNext(step) {
-    if (!queue.length) return;
+    if (!queue.length) {
+      setStatus("Your queue is empty. Choose a track first.");
+      return;
+    }
 
     currentIndex = (currentIndex + step + queue.length) % queue.length;
     playTrack(queue[currentIndex]);
-  }
-
-  function updateFavoriteButton() {
-    const saved = currentTrack &&
-      favoriteIds.has(String(currentTrack.id));
-
-    $("favorite").textContent = saved ? "♥" : "♡";
-    $("favorite").setAttribute("aria-pressed", saved ? "true" : "false");
   }
 
   $("searchForm").addEventListener("submit", event => {
@@ -648,13 +807,35 @@ footer {
   $("next").addEventListener("click", () => playNext(1));
 
   $("previous").addEventListener("click", () => {
-    if (audio.currentTime > 3) audio.currentTime = 0;
-    else playNext(-1);
+    if (!currentTrack) {
+      setStatus("Choose a track first.");
+      return;
+    }
+
+    if (audio.currentTime > 3) {
+      audio.currentTime = 0;
+    } else {
+      playNext(-1);
+    }
   });
 
   $("volume").addEventListener("input", event => {
-    audio.volume = Number(event.target.value);
+    const volume = Number(event.target.value);
+    audio.volume = volume;
+
+    try {
+      localStorage.setItem(VOLUME_KEY, String(volume));
+    } catch {}
   });
+
+  try {
+    const savedVolume = localStorage.getItem(VOLUME_KEY);
+    if (savedVolume !== null) {
+      $("volume").value = String(
+        Math.min(1, Math.max(0, Number(savedVolume)))
+      );
+    }
+  } catch {}
 
   audio.volume = Number($("volume").value);
 
@@ -675,19 +856,28 @@ footer {
     updatePlayButtons();
   });
 
-  audio.addEventListener("ended", () => playNext(1));
-
   audio.addEventListener("timeupdate", () => {
     if (Number.isFinite(audio.duration) && audio.duration > 0) {
       $("seek").value =
         String((audio.currentTime / audio.duration) * 100);
+
       $("elapsed").textContent = formatTime(audio.currentTime);
       $("duration").textContent = formatTime(audio.duration);
     }
   });
 
   audio.addEventListener("loadedmetadata", () => {
-    $("duration").textContent = formatTime(audio.duration);
+    if (Number.isFinite(audio.duration)) {
+      $("duration").textContent = formatTime(audio.duration);
+    }
+  });
+
+  audio.addEventListener("ended", () => {
+    if (queue.length) playNext(1);
+    else {
+      isPlaying = false;
+      updatePlayButtons();
+    }
   });
 
   audio.addEventListener("error", () => {
@@ -703,12 +893,19 @@ footer {
     }
 
     const id = String(currentTrack.id);
+    const exists = favorites.some(track => String(track.id) === id);
 
-    if (favoriteIds.has(id)) favoriteIds.delete(id);
-    else favoriteIds.add(id);
+    if (exists) {
+      favorites = favorites.filter(track => String(track.id) !== id);
+      setStatus("Removed from your favorites.");
+    } else {
+      favorites.unshift(currentTrack);
+      setStatus("Added to your favorites.");
+    }
 
+    saveFavorites();
+    renderFavorites();
     updateFavoriteButton();
-    setStatus("Favorite updated for this session.");
   });
 
   $("showQueue").addEventListener("click", () => {
@@ -718,8 +915,10 @@ footer {
     });
   });
 
+  renderQueue();
+  renderFavorites();
   loadTrending();
 })();
 </script>
 </body>
-</h
+</html>
