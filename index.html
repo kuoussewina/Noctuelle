@@ -7,6 +7,64 @@
   <meta name="description" content="Discover music for late nights, quiet mornings, and every feeling in between.">
   <title>Noctuelle — Music for your midnight</title>
 
+.bottom-tabs {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 4px;
+
+  padding: 10px 8px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
+
+  background: rgba(20, 13, 21, 0.96);
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.bottom-tab {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: #a99aa9;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  padding: 5px 2px;
+  font: inherit;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.bottom-tab .tab-icon {
+  font-size: 21px;
+  line-height: 1.2;
+}
+
+.bottom-tab.active {
+  color: #f2a8d5;
+}
+
+.bottom-tab:focus-visible {
+  outline: 2px solid #f2a8d5;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+body {
+  padding-bottom: 85px;
+}
   <style>
     :root {
       --bg: #100b11;
@@ -1511,5 +1569,29 @@
     // Start the app.
     loadTrending();
   </script>
-</body>
-</html>
+<nav class="bottom-tabs" aria-label="Main navigation">
+  <button class="bottom-tab active" data-tab="home">
+    <span class="tab-icon">⌂</span>
+    <span>Home</span>
+  </button>
+
+  <button class="bottom-tab" data-tab="cloud">
+    <span class="tab-icon">☁</span>
+    <span>Cloud</span>
+  </button>
+
+  <button class="bottom-tab" data-tab="listening">
+    <span class="tab-icon">♫</span>
+    <span>Listening</span>
+  </button>
+
+  <button class="bottom-tab" data-tab="stacks">
+    <span class="tab-icon">▤</span>
+    <span>Stacks</span>
+  </button>
+
+  <button class="bottom-tab" data-tab="profile">
+    <span class="tab-icon">♡</span>
+    <span>Profile</span>
+  </button>
+</nav>
