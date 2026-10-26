@@ -1,0 +1,444 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#321717">
+<title>Sonora — Music for your world</title>
+<style>
+:root {
+  color-scheme: dark;
+  --white: #fff8f7;
+  --muted: #bba5a5;
+  --glass: rgba(255,255,255,.105);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: #160d0e;
+  color: var(--white);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    "Segoe UI", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+.app {
+  min-height: 100dvh;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  padding: max(18px, env(safe-area-inset-top)) 22px
+    max(18px, env(safe-area-inset-bottom));
+}
+.ambient {
+  position: absolute;
+  inset: -15%;
+  z-index: -2;
+  background:
+    radial-gradient(ellipse at 48% 8%, #71332f 0, transparent 48%),
+    radial-gradient(ellipse at 85% 46%, #512522 0, transparent 42%),
+    linear-gradient(155deg, #351819, #1c1012 65%, #110c0e);
+  transition: background 1s;
+}
+.ambient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 7, 9, .23);
+  backdrop-filter: blur(48px);
+}
+.top {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding-top: 24px;
+}
+.handle {
+  position: absolute;
+  top: max(9px, env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  width: 54px;
+  height: 5px;
+  border-radius: 10px;
+  background: #e6cccc;
+  opacity: .75;
+}
+.cover {
+  width: 68px;
+  height: 68px;
+  flex: 0 0 68px;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  font-size: 30px;
+  background: linear-gradient(140deg, #a45c51, #462126 55%, #1b141a);
+  box-shadow: 0 8px 24px #0004;
+}
+.track { min-width: 0; flex: 1; }
+.track h2 {
+  font-size: 17px;
+  margin: 0 0 4px;
+  letter-spacing: -.4px;
+}
+.track p { margin: 0; color: var(--muted); font-size: 15px; }
+.round {
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--glass);
+  display: grid;
+  place-items: center;
+  font-size: 23px;
+}
+.round.active { color: #ffb7bd; }
+.lyrics {
+  height: min(49vh, 440px);
+  min-height: 300px;
+  margin-top: 22px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  mask-image: linear-gradient(transparent 0%, black 9%, black 87%, transparent 100%);
+  padding: 10px 0 35px;
+}
+.lyrics::-webkit-scrollbar { display: none; }
+.line {
+  display: block;
+  border: 0;
+  background: transparent;
+  padding: 10px 0;
+  width: 100%;
+  text-align: left;
+  font-size: clamp(27px, 7.5vw, 39px);
+  line-height: 1.27;
+  font-weight: 750;
+  letter-spacing: -1.25px;
+  color: #ad9698;
+  opacity: .65;
+  transition: color .35s, opacity .35s, transform .35s;
+}
+.line.current {
+  color: #fff8f7;
+  opacity: 1;
+  transform: scale(1.01);
+  transform-origin: left center;
+}
+.lyric-credit {
+  font-size: 13px;
+  color: #d4bebe;
+  text-decoration: underline;
+  margin: 8px 0 17px;
+}
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 9px;
+}
+input[type="range"] {
+  appearance: none;
+  width: 100%;
+  height: 5px;
+  border-radius: 8px;
+  background: #725d5e;
+  outline: none;
+  margin: 0;
+}
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  background: white;
+  border-radius: 50%;
+}
+.controls {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 38px 0 34px;
+}
+.control {
+  background: none;
+  border: 0;
+  font-size: 36px;
+  padding: 10px;
+}
+.control.main { font-size: 55px; }
+.volume {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #d8c5c5;
+  font-size: 18px;
+}
+.volume input { flex: 1; }
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 27px 0 18px;
+}
+.nav {
+  border: 0;
+  background: transparent;
+  border-radius: 28px;
+  min-width: 60px;
+  min-height: 53px;
+  padding: 0 17px;
+  font-size: 22px;
+  color: #c7b1b3;
+}
+.nav.selected { background: var(--glass); color: white; }
+.device {
+  text-align: center;
+  font-size: 12px;
+  color: #bda9ab;
+  padding-bottom: 3px;
+}
+.notice {
+  text-align: center;
+  color: #c8aeb0;
+  font-size: 11px;
+  margin-top: 15px;
+}
+@media (min-width: 600px) {
+  .app { max-width: 470px; margin: auto; }
+  .lyrics { height: 420px; }
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <div class="ambient" id="ambient"></div>
+  <div class="handle"></div>
+
+  <header class="top">
+    <div class="cover" id="cover">♫</div>
+    <div class="track">
+      <h2 id="title">A Little Longer</h2>
+      <p id="artist">Sonora Sessions</p>
+    </div>
+    <button class="round" id="favorite" aria-label="Favorite song">☆</button>
+    <button class="round" id="more" aria-label="More options">···</button>
+  </header>
+
+  <section class="lyrics" id="lyrics" aria-label="Song lyrics">
+    <div id="lyricLines"></div>
+  </section>
+
+  <div class="lyric-credit">Lyrics · Demo original</div>
+
+  <section aria-label="Track progress">
+    <input id="seek" type="range" min="0" max="180" value="0"
+      aria-label="Track progress">
+    <div class="progress-info">
+      <span id="elapsed">0:00</span>
+      <span id="remaining">−3:00</span>
+    </div>
+  </section>
+
+  <section class="controls" aria-label="Playback controls">
+    <button class="control" id="previous" aria-label="Previous track">|◀</button>
+    <button class="control main" id="toggle" aria-label="Play">▶</button>
+    <button class="control" id="next" aria-label="Next track">▶|</button>
+  </section>
+
+  <div class="volume">
+    <span aria-hidden="true">◖</span>
+    <input type="range" min="0" max="100" value="65"
+      aria-label="Volume">
+    <span aria-hidden="true">◗</span>
+  </div>
+
+  <nav class="bottom" aria-label="Player navigation">
+    <button class="nav selected" aria-label="Lyrics">▤</button>
+    <button class="nav" aria-label="Devices">▯</button>
+    <button class="nav" aria-label="Profile">♙</button>
+    <button class="nav" aria-label="Queue">☷</button>
+  </nav>
+
+  <div class="device" id="device">♫ Sonora · Demo player</div>
+  <p class="notice">Original demo lyrics · Audio not connected yet</p>
+</main>
+
+<script>
+const songs = [
+  {
+    title: "A Little Longer",
+    artist: "Sonora Sessions",
+    cover: "♫",
+    color: "red",
+    lines: [
+      [0, "The city sleeps beneath the gold"],
+      [8, "A thousand stories left untold"],
+      [16, "The night is ours, the world is slow"],
+      [25, "There's nowhere else we need to go"],
+      [35, "Stay for a little longer"],
+      [44, "Let the quiet make us stronger"],
+      [54, "Every moment, every sound"],
+      [63, "Feels like home when you're around"],
+      [75, "The morning waits beyond the blue"],
+      [85, "Tonight belongs to me and you"],
+      [96, "Stay for a little longer"],
+      [108, "Let the quiet make us stronger"],
+      [123, "If this moment disappears"],
+      [135, "I'll keep its echo through the years"],
+      [150, "Stay for a little longer"],
+      [165, "A little longer"]
+    ]
+  },
+  {
+    title: "Blue Hour",
+    artist: "Sonora Sessions",
+    cover: "☾",
+    color: "blue",
+    lines: [
+      [0, "The sky turns softly into blue"],
+      [9, "The world feels different next to you"],
+      [19, "The evening paints the streets in gold"],
+      [29, "A thousand dreams begin to unfold"],
+      [40, "Meet me where the daylight fades"],
+      [50, "Where the stars come out to play"],
+      [60, "We can let the hours fly"],
+      [70, "Underneath the open sky"],
+      [85, "Meet me where the daylight fades"],
+      [100, "Let the night erase the day"],
+      [120, "All the things we never knew"],
+      [145, "Look a little more like truth"]
+    ]
+  }
+];
+
+let songIndex = 0;
+let time = 0;
+let playing = false;
+let favorite = false;
+let ticker = null;
+const duration = 180;
+
+const $ = id => document.getElementById(id);
+const linesRoot = $("lyricLines");
+
+function formatTime(n) {
+  n = Math.max(0, Math.floor(n));
+  return Math.floor(n / 60) + ":" + String(n % 60).padStart(2, "0");
+}
+
+function loadSong(index) {
+  songIndex = (index + songs.length) % songs.length;
+  time = 0;
+  const song = songs[songIndex];
+  $("title").textContent = song.title;
+  $("artist").textContent = song.artist;
+  $("cover").textContent = song.cover;
+  $("ambient").style.background = song.color === "blue"
+    ? "radial-gradient(ellipse at 45% 8%, #344b78, transparent 55%), linear-gradient(155deg,#202b4c,#140f1b)"
+    : "radial-gradient(ellipse at 48% 8%,#71332f,transparent 48%), radial-gradient(ellipse at 85% 46%,#512522,transparent 42%),linear-gradient(155deg,#351819,#1c1012 65%,#110c0e)";
+  linesRoot.replaceChildren();
+
+  song.lines.forEach(([at, text], i) => {
+    const button = document.createElement("button");
+    button.className = "line";
+    button.textContent = text;
+    button.dataset.time = at;
+    button.addEventListener("click", () => {
+      time = at;
+      render();
+    });
+    linesRoot.appendChild(button);
+  });
+  favorite = false;
+  $("favorite").textContent = "☆";
+  render();
+}
+
+function render() {
+  const song = songs[songIndex];
+  $("seek").value = time;
+  $("elapsed").textContent = formatTime(time);
+  $("remaining").textContent = "−" + formatTime(duration - time);
+  $("toggle").textContent = playing ? "Ⅱ" : "▶";
+  $("toggle").setAttribute("aria-label", playing ? "Pause" : "Play");
+
+  let activeIndex = 0;
+  song.lines.forEach(([at], i) => {
+    if (time >= at) activeIndex = i;
+  });
+
+  [...linesRoot.children].forEach((el, i) => {
+    el.classList.toggle("current", i === activeIndex);
+  });
+
+  const active = linesRoot.children[activeIndex];
+  if (active) {
+    const container = $("lyrics");
+    const target = active.offsetTop - container.offsetTop
+      - container.clientHeight * .35;
+    container.scrollTo({
+      top: Math.max(0, target),
+      behavior: "smooth"
+    });
+  }
+}
+
+function stopTicker() {
+  if (ticker) clearInterval(ticker);
+  ticker = null;
+}
+
+function startTicker() {
+  stopTicker();
+  ticker = setInterval(() => {
+    if (!playing) return;
+    time++;
+    if (time >= duration) {
+      if (songIndex < songs.length - 1) {
+        loadSong(songIndex + 1);
+      } else {
+        time = duration;
+        playing = false;
+        stopTicker();
+      }
+    }
+    render();
+  }, 1000);
+}
+
+$("toggle").addEventListener("click", () => {
+  playing = !playing;
+  startTicker();
+  render();
+});
+$("seek").addEventListener("input", e => {
+  time = Number(e.target.value);
+  render();
+});
+$("favorite").addEventListener("click", () => {
+  favorite = !favorite;
+  $("favorite").textContent = favorite ? "★" : "☆";
+  $("favorite").classList.toggle("active", favorite);
+});
+$("next").addEventListener("click", () => loadSong(songIndex + 1));
+$("previous").addEventListener("click", () => loadSong(songIndex - 1));
+$("more").addEventListener("click", () => {
+  $("device").textContent = "Sonora · More options coming soon";
+});
+document.querySelectorAll(".nav").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".nav").forEach(b => b.classList.remove("selected"));
+    button.classList.add("selected");
+    $("device").textContent = button.getAttribute("aria-label") === "Lyrics"
+      ? "♫ Sonora · Demo player"
+      : button.getAttribute("aria-label") + " · Coming soon";
+  });
+});
+
+loadSong(0);
+</script>
+</body>
+</html>
