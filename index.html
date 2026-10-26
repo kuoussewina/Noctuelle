@@ -4,441 +4,722 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#321717">
-<title>Sonora — Music for your world</title>
+<meta name="theme-color" content="#140d15">
+<title>Noctuelle — Music for your own world</title>
+
 <style>
 :root {
   color-scheme: dark;
-  --white: #fff8f7;
-  --muted: #bba5a5;
-  --glass: rgba(255,255,255,.105);
+  --bg: #100a10;
+  --panel: rgba(255,255,255,.07);
+  --muted: #b9a9b6;
+  --accent: #e8bfdc;
+  --line: rgba(255,255,255,.1);
 }
 * { box-sizing: border-box; }
 body {
   margin: 0;
-  min-height: 100dvh;
-  background: #160d0e;
-  color: var(--white);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
-    "Segoe UI", sans-serif;
-  -webkit-tap-highlight-color: transparent;
+  min-height: 100vh;
+  background: var(--bg);
+  color: white;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
-button { font: inherit; color: inherit; cursor: pointer; }
-.app {
-  min-height: 100dvh;
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  padding: max(18px, env(safe-area-inset-top)) 22px
-    max(18px, env(safe-area-inset-bottom));
+button, input { font: inherit; }
+button { cursor: pointer; color: inherit; }
+button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
-.ambient {
-  position: absolute;
-  inset: -15%;
+.app { min-height: 100vh; padding-bottom: 112px; }
+.backdrop {
+  position: fixed;
+  inset: 0;
   z-index: -2;
   background:
-    radial-gradient(ellipse at 48% 8%, #71332f 0, transparent 48%),
-    radial-gradient(ellipse at 85% 46%, #512522 0, transparent 42%),
-    linear-gradient(155deg, #351819, #1c1012 65%, #110c0e);
-  transition: background 1s;
+    radial-gradient(ellipse at 50% 0%, #68465f 0%, transparent 48%),
+    linear-gradient(160deg, #271728, #100a10 65%);
 }
-.ambient::after {
+.backdrop::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(15, 7, 9, .23);
-  backdrop-filter: blur(48px);
+  backdrop-filter: blur(55px);
+  background: rgba(10,5,10,.48);
 }
-.top {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  padding-top: 24px;
-}
-.handle {
-  position: absolute;
-  top: max(9px, env(safe-area-inset-top));
-  left: 50%;
-  transform: translateX(-50%);
-  width: 54px;
-  height: 5px;
-  border-radius: 10px;
-  background: #e6cccc;
-  opacity: .75;
-}
-.cover {
-  width: 68px;
-  height: 68px;
-  flex: 0 0 68px;
-  border-radius: 15px;
-  display: grid;
-  place-items: center;
-  font-size: 30px;
-  background: linear-gradient(140deg, #a45c51, #462126 55%, #1b141a);
-  box-shadow: 0 8px 24px #0004;
-}
-.track { min-width: 0; flex: 1; }
-.track h2 {
-  font-size: 17px;
-  margin: 0 0 4px;
-  letter-spacing: -.4px;
-}
-.track p { margin: 0; color: var(--muted); font-size: 15px; }
-.round {
-  width: 48px;
-  height: 48px;
-  border: 0;
-  border-radius: 50%;
-  background: var(--glass);
-  display: grid;
-  place-items: center;
-  font-size: 23px;
-}
-.round.active { color: #ffb7bd; }
-.lyrics {
-  height: min(49vh, 440px);
-  min-height: 300px;
-  margin-top: 22px;
-  overflow-y: auto;
-  scroll-behavior: smooth;
-  scrollbar-width: none;
-  mask-image: linear-gradient(transparent 0%, black 9%, black 87%, transparent 100%);
-  padding: 10px 0 35px;
-}
-.lyrics::-webkit-scrollbar { display: none; }
-.line {
-  display: block;
-  border: 0;
-  background: transparent;
-  padding: 10px 0;
-  width: 100%;
-  text-align: left;
-  font-size: clamp(27px, 7.5vw, 39px);
-  line-height: 1.27;
-  font-weight: 750;
-  letter-spacing: -1.25px;
-  color: #ad9698;
-  opacity: .65;
-  transition: color .35s, opacity .35s, transform .35s;
-}
-.line.current {
-  color: #fff8f7;
-  opacity: 1;
-  transform: scale(1.01);
-  transform-origin: left center;
-}
-.lyric-credit {
-  font-size: 13px;
-  color: #d4bebe;
-  text-decoration: underline;
-  margin: 8px 0 17px;
-}
-.progress-info {
+header {
   display: flex;
   justify-content: space-between;
-  color: var(--muted);
-  font-size: 12px;
-  margin-top: 9px;
-}
-input[type="range"] {
-  appearance: none;
-  width: 100%;
-  height: 5px;
-  border-radius: 8px;
-  background: #725d5e;
-  outline: none;
-  margin: 0;
-}
-input[type="range"]::-webkit-slider-thumb {
-  appearance: none;
-  width: 13px;
-  height: 13px;
-  background: white;
-  border-radius: 50%;
-}
-.controls {
-  display: flex;
-  justify-content: space-around;
   align-items: center;
-  margin: 38px 0 34px;
+  padding: max(22px, env(safe-area-inset-top)) 20px 18px;
 }
-.control {
-  background: none;
+.brand { font-size: 25px; font-weight: 800; letter-spacing: -1.2px; }
+.brand span { color: var(--accent); }
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.icon-btn, .round-btn {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  border-radius: 50%;
+  width: 43px;
+  height: 43px;
+  display: grid;
+  place-items: center;
+}
+main { width: min(100%, 700px); margin: auto; padding: 0 20px; }
+.search-area { padding: 6px 0 22px; }
+.searchbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px 7px 15px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255,255,255,.08);
+}
+.searchbar input {
+  min-width: 0;
+  flex: 1;
+  color: white;
+  background: transparent;
   border: 0;
-  font-size: 36px;
-  padding: 10px;
+  outline: 0;
+  padding: 9px 0;
 }
-.control.main { font-size: 55px; }
-.volume {
+.searchbar button {
+  border: 0;
+  border-radius: 13px;
+  padding: 10px 14px;
+  color: #26131f;
+  background: var(--accent);
+  font-weight: 750;
+}
+.status { color: var(--muted); font-size: 12px; line-height: 1.5; min-height: 18px; }
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 16px 0 12px;
+}
+.section-heading h2 { font-size: 14px; margin: 0; }
+.section-heading span { font-size: 11px; color: var(--muted); }
+.results { display: grid; gap: 5px; }
+.track-row {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #d8c5c5;
-  font-size: 18px;
-}
-.volume input { flex: 1; }
-.bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 27px 0 18px;
-}
-.nav {
-  border: 0;
+  width: 100%;
+  text-align: left;
+  padding: 9px;
+  border: 1px solid transparent;
+  border-radius: 15px;
   background: transparent;
-  border-radius: 28px;
-  min-width: 60px;
-  min-height: 53px;
-  padding: 0 17px;
+}
+.track-row:active, .track-row:hover { background: var(--panel); }
+.track-row img {
+  width: 51px;
+  height: 51px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #382431;
+}
+.track-info { min-width: 0; flex: 1; }
+.track-info strong, .track-info small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.track-info strong { font-size: 13px; }
+.track-info small { margin-top: 5px; color: var(--muted); font-size: 11px; }
+.play-small { color: var(--accent); font-size: 18px; }
+.player {
+  margin: 22px 0;
+  padding: 18px;
+  border-radius: 25px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.045);
+  box-shadow: 0 18px 60px rgba(0,0,0,.18);
+}
+.now-label { text-align: center; margin-bottom: 17px; }
+.cover-wrap {
+  width: min(68%, 260px);
+  aspect-ratio: 1;
+  margin: 0 auto 22px;
+  border-radius: 22px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #63334e, #211321);
+  box-shadow: 0 20px 50px #0005;
+}
+.cover-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.song-meta { text-align: center; }
+.song-meta h1 { margin: 0; font-size: clamp(20px, 5vw, 27px); letter-spacing: -.8px; }
+.song-meta p { margin: 8px 0 18px; color: var(--muted); font-size: 13px; }
+.player-actions { display: flex; justify-content: center; gap: 18px; align-items: center; }
+.main-play {
+  width: 58px;
+  height: 58px;
+  border: 0;
+  border-radius: 50%;
+  background: white;
+  color: #1a1018;
   font-size: 22px;
-  color: #c7b1b3;
+  font-weight: 800;
 }
-.nav.selected { background: var(--glass); color: white; }
-.device {
-  text-align: center;
-  font-size: 12px;
-  color: #bda9ab;
-  padding-bottom: 3px;
+.timeline { margin: 20px 0 12px; }
+input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+.time-row { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); }
+.volume-row { display: flex; gap: 10px; align-items: center; margin-top: 12px; }
+.volume-row input { flex: 1; }
+.lyrics {
+  min-height: 290px;
+  padding: 25px 18px;
+  margin: 22px 0;
+  border-radius: 25px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.035);
 }
-.notice {
-  text-align: center;
-  color: #c8aeb0;
-  font-size: 11px;
-  margin-top: 15px;
+.lyrics-top { display: flex; justify-content: space-between; align-items: center; }
+.lyrics-top h2 { margin: 0; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; }
+.lyrics-lines { text-align: left; padding: 28px 0 12px; }
+.lyrics-lines p {
+  margin: 16px 0;
+  font-size: clamp(20px, 5.4vw, 31px);
+  font-weight: 800;
+  letter-spacing: -.8px;
+  line-height: 1.25;
 }
-@media (min-width: 600px) {
-  .app { max-width: 470px; margin: auto; }
-  .lyrics { height: 420px; }
+.lyrics-lines .dim { color: #ffffff42; }
+.lyrics-lines .current { color: white; }
+.lyrics-note { font-size: 11px; line-height: 1.6; color: var(--muted); text-align: center; }
+.queue { margin: 25px 0; }
+footer {
+  position: fixed;
+  z-index: 5;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 18px max(14px, env(safe-area-inset-bottom));
+  background: rgba(17,10,17,.9);
+  border-top: 1px solid var(--line);
+  backdrop-filter: blur(25px);
+}
+.mini-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(100%, 660px);
+  margin: 0 auto;
+}
+.mini-player img { width: 42px; height: 42px; border-radius: 9px; object-fit: cover; }
+.mini-info { flex: 1; min-width: 0; }
+.mini-info strong, .mini-info small {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.mini-info strong { font-size: 12px; }
+.mini-info small { font-size: 10px; color: var(--muted); margin-top: 4px; }
+.mini-player button { border: 0; background: transparent; font-size: 19px; padding: 8px; }
+@media(min-width:600px) {
+  main { padding: 0 30px; }
+  .player { padding: 25px; }
 }
 </style>
 </head>
+
 <body>
-<main class="app">
-  <div class="ambient" id="ambient"></div>
-  <div class="handle"></div>
+<div class="backdrop"></div>
+<div class="app">
 
-  <header class="top">
-    <div class="cover" id="cover">♫</div>
-    <div class="track">
-      <h2 id="title">A Little Longer</h2>
-      <p id="artist">Sonora Sessions</p>
-    </div>
-    <button class="round" id="favorite" aria-label="Favorite song">☆</button>
-    <button class="round" id="more" aria-label="More options">···</button>
-  </header>
-
-  <section class="lyrics" id="lyrics" aria-label="Song lyrics">
-    <div id="lyricLines"></div>
-  </section>
-
-  <div class="lyric-credit">Lyrics · Demo original</div>
-
-  <section aria-label="Track progress">
-    <input id="seek" type="range" min="0" max="180" value="0"
-      aria-label="Track progress">
-    <div class="progress-info">
-      <span id="elapsed">0:00</span>
-      <span id="remaining">−3:00</span>
-    </div>
-  </section>
-
-  <section class="controls" aria-label="Playback controls">
-    <button class="control" id="previous" aria-label="Previous track">|◀</button>
-    <button class="control main" id="toggle" aria-label="Play">▶</button>
-    <button class="control" id="next" aria-label="Next track">▶|</button>
-  </section>
-
-  <div class="volume">
-    <span aria-hidden="true">◖</span>
-    <input type="range" min="0" max="100" value="65"
-      aria-label="Volume">
-    <span aria-hidden="true">◗</span>
+<header>
+  <div>
+    <div class="brand">noctu<span>elle</span></div>
+    <div class="eyebrow">music for your own world</div>
   </div>
+  <button class="icon-btn" id="showQueue" aria-label="Show queue">≡</button>
+</header>
 
-  <nav class="bottom" aria-label="Player navigation">
-    <button class="nav selected" aria-label="Lyrics">▤</button>
-    <button class="nav" aria-label="Devices">▯</button>
-    <button class="nav" aria-label="Profile">♙</button>
-    <button class="nav" aria-label="Queue">☷</button>
-  </nav>
+<main>
+  <section class="search-area">
+    <div class="eyebrow" style="margin-bottom:12px">Discover something new</div>
+    <form class="searchbar" id="searchForm">
+      <span aria-hidden="true">⌕</span>
+      <input id="searchInput" type="search" placeholder="Songs, artists, moods…" autocomplete="off">
+      <button type="submit">Search</button>
+    </form>
+    <p class="status" id="status" role="status">Connecting to Audius…</p>
+  </section>
 
-  <div class="device" id="device">♫ Sonora · Demo player</div>
-  <p class="notice">Original demo lyrics · Audio not connected yet</p>
+  <section id="resultsSection">
+    <div class="section-heading">
+      <h2 id="resultsTitle">Trending on Audius</h2>
+      <span>OPEN MUSIC</span>
+    </div>
+    <div class="results" id="results"></div>
+  </section>
+
+  <section class="player" aria-label="Music player">
+    <div class="eyebrow now-label">now playing</div>
+    <div class="cover-wrap"><img id="cover" alt="Album artwork"></div>
+
+    <div class="song-meta">
+      <h1 id="songTitle">Choose a track</h1>
+      <p id="songArtist">Discover music on Audius</p>
+    </div>
+
+    <div class="player-actions">
+      <button class="round-btn" id="previous" aria-label="Previous track">|‹</button>
+      <button class="main-play" id="playPause" aria-label="Play">▶</button>
+      <button class="round-btn" id="next" aria-label="Next track">›|</button>
+    </div>
+
+    <div class="timeline">
+      <input id="seek" type="range" min="0" max="100" value="0" step="0.1" aria-label="Seek">
+      <div class="time-row">
+        <span id="elapsed">0:00</span>
+        <span id="duration">0:00</span>
+      </div>
+    </div>
+
+    <div class="volume-row">
+      <span aria-hidden="true">♪</span>
+      <input id="volume" type="range" min="0" max="1" value="0.85" step="0.01" aria-label="Volume">
+      <button class="icon-btn" id="favorite" aria-label="Save favorite" aria-pressed="false">♡</button>
+    </div>
+  </section>
+
+  <section class="lyrics" aria-label="Lyrics display">
+    <div class="lyrics-top">
+      <h2>Lyrics view</h2>
+      <span class="eyebrow">noctuelle studio</span>
+    </div>
+
+    <div class="lyrics-lines" id="lyricsLines" aria-live="polite">
+      <p class="dim">Your next favorite song</p>
+      <p class="current">starts right here.</p>
+      <p class="dim">Search and choose a track above.</p>
+    </div>
+
+    <p class="lyrics-note" id="lyricsNote">
+      Synchronized lyrics need a separate licensed lyrics source.
+    </p>
+  </section>
+
+  <section class="queue" id="queueSection">
+    <div class="section-heading">
+      <h2>Up next</h2>
+      <span id="queueCount">0 TRACKS</span>
+    </div>
+    <div class="results" id="queue"></div>
+  </section>
 </main>
 
+<footer>
+  <div class="mini-player">
+    <img id="miniCover" alt="">
+    <div class="mini-info">
+      <strong id="miniTitle">Noctuelle</strong>
+      <small id="miniArtist">Find your sound</small>
+    </div>
+    <button id="miniPlay" aria-label="Play or pause">▶</button>
+  </div>
+</footer>
+</div>
+
+<audio id="audio" preload="metadata"></audio>
+
 <script>
-const songs = [
-  {
-    title: "A Little Longer",
-    artist: "Sonora Sessions",
-    cover: "♫",
-    color: "red",
-    lines: [
-      [0, "The city sleeps beneath the gold"],
-      [8, "A thousand stories left untold"],
-      [16, "The night is ours, the world is slow"],
-      [25, "There's nowhere else we need to go"],
-      [35, "Stay for a little longer"],
-      [44, "Let the quiet make us stronger"],
-      [54, "Every moment, every sound"],
-      [63, "Feels like home when you're around"],
-      [75, "The morning waits beyond the blue"],
-      [85, "Tonight belongs to me and you"],
-      [96, "Stay for a little longer"],
-      [108, "Let the quiet make us stronger"],
-      [123, "If this moment disappears"],
-      [135, "I'll keep its echo through the years"],
-      [150, "Stay for a little longer"],
-      [165, "A little longer"]
-    ]
-  },
-  {
-    title: "Blue Hour",
-    artist: "Sonora Sessions",
-    cover: "☾",
-    color: "blue",
-    lines: [
-      [0, "The sky turns softly into blue"],
-      [9, "The world feels different next to you"],
-      [19, "The evening paints the streets in gold"],
-      [29, "A thousand dreams begin to unfold"],
-      [40, "Meet me where the daylight fades"],
-      [50, "Where the stars come out to play"],
-      [60, "We can let the hours fly"],
-      [70, "Underneath the open sky"],
-      [85, "Meet me where the daylight fades"],
-      [100, "Let the night erase the day"],
-      [120, "All the things we never knew"],
-      [145, "Look a little more like truth"]
-    ]
+(() => {
+  "use strict";
+
+  const API_BASE = "https://api.audius.co/v1";
+  const APP_NAME = "Noctuelle";
+
+  // Optional: enter a rotated Audius API key between the quotes.
+  // Never place a Bearer token or other private credentials here.
+  const AUDIUS_API_KEY = "";
+
+  const $ = id => document.getElementById(id);
+  const audio = $("audio");
+
+  let tracks = [];
+  let queue = [];
+  let currentIndex = -1;
+  let currentTrack = null;
+  let isPlaying = false;
+
+  // Favorites last only until this page is refreshed.
+  const favoriteIds = new Set();
+
+  function setStatus(message) {
+    $("status").textContent = message;
   }
-];
 
-let songIndex = 0;
-let time = 0;
-let playing = false;
-let favorite = false;
-let ticker = null;
-const duration = 180;
-
-const $ = id => document.getElementById(id);
-const linesRoot = $("lyricLines");
-
-function formatTime(n) {
-  n = Math.max(0, Math.floor(n));
-  return Math.floor(n / 60) + ":" + String(n % 60).padStart(2, "0");
-}
-
-function loadSong(index) {
-  songIndex = (index + songs.length) % songs.length;
-  time = 0;
-  const song = songs[songIndex];
-  $("title").textContent = song.title;
-  $("artist").textContent = song.artist;
-  $("cover").textContent = song.cover;
-  $("ambient").style.background = song.color === "blue"
-    ? "radial-gradient(ellipse at 45% 8%, #344b78, transparent 55%), linear-gradient(155deg,#202b4c,#140f1b)"
-    : "radial-gradient(ellipse at 48% 8%,#71332f,transparent 48%), radial-gradient(ellipse at 85% 46%,#512522,transparent 42%),linear-gradient(155deg,#351819,#1c1012 65%,#110c0e)";
-  linesRoot.replaceChildren();
-
-  song.lines.forEach(([at, text], i) => {
-    const button = document.createElement("button");
-    button.className = "line";
-    button.textContent = text;
-    button.dataset.time = at;
-    button.addEventListener("click", () => {
-      time = at;
-      render();
-    });
-    linesRoot.appendChild(button);
-  });
-  favorite = false;
-  $("favorite").textContent = "☆";
-  render();
-}
-
-function render() {
-  const song = songs[songIndex];
-  $("seek").value = time;
-  $("elapsed").textContent = formatTime(time);
-  $("remaining").textContent = "−" + formatTime(duration - time);
-  $("toggle").textContent = playing ? "Ⅱ" : "▶";
-  $("toggle").setAttribute("aria-label", playing ? "Pause" : "Play");
-
-  let activeIndex = 0;
-  song.lines.forEach(([at], i) => {
-    if (time >= at) activeIndex = i;
-  });
-
-  [...linesRoot.children].forEach((el, i) => {
-    el.classList.toggle("current", i === activeIndex);
-  });
-
-  const active = linesRoot.children[activeIndex];
-  if (active) {
-    const container = $("lyrics");
-    const target = active.offsetTop - container.offsetTop
-      - container.clientHeight * .35;
-    container.scrollTo({
-      top: Math.max(0, target),
-      behavior: "smooth"
-    });
+  function formatTime(value) {
+    const seconds = Math.max(0, Math.floor(Number(value) || 0));
+    return Math.floor(seconds / 60) + ":" +
+      String(seconds % 60).padStart(2, "0");
   }
-}
 
-function stopTicker() {
-  if (ticker) clearInterval(ticker);
-  ticker = null;
-}
+  function artworkUrl(track) {
+    const art = track?.artwork;
+    if (typeof art === "string") return art;
+    return art?.["480x480"] || art?.["150x150"] ||
+           art?.["1000x1000"] || "";
+  }
 
-function startTicker() {
-  stopTicker();
-  ticker = setInterval(() => {
-    if (!playing) return;
-    time++;
-    if (time >= duration) {
-      if (songIndex < songs.length - 1) {
-        loadSong(songIndex + 1);
-      } else {
-        time = duration;
-        playing = false;
-        stopTicker();
-      }
+  function trackTitle(track) {
+    return track?.title || "Untitled track";
+  }
+
+  function artistName(track) {
+    return track?.user?.name || track?.artist_name || "Unknown artist";
+  }
+
+  function safeImage(image, url) {
+    image.onerror = () => {
+      image.onerror = null;
+      image.removeAttribute("src");
+    };
+    if (url) image.src = url;
+    else image.removeAttribute("src");
+  }
+
+  async function apiGet(path, params = {}) {
+    const url = new URL(API_BASE + path);
+
+    url.searchParams.set("app_name", APP_NAME);
+
+    if (AUDIUS_API_KEY.trim()) {
+      url.searchParams.set("api_key", AUDIUS_API_KEY.trim());
     }
-    render();
-  }, 1000);
-}
 
-$("toggle").addEventListener("click", () => {
-  playing = !playing;
-  startTicker();
-  render();
-});
-$("seek").addEventListener("input", e => {
-  time = Number(e.target.value);
-  render();
-});
-$("favorite").addEventListener("click", () => {
-  favorite = !favorite;
-  $("favorite").textContent = favorite ? "★" : "☆";
-  $("favorite").classList.toggle("active", favorite);
-});
-$("next").addEventListener("click", () => loadSong(songIndex + 1));
-$("previous").addEventListener("click", () => loadSong(songIndex - 1));
-$("more").addEventListener("click", () => {
-  $("device").textContent = "Sonora · More options coming soon";
-});
-document.querySelectorAll(".nav").forEach(button => {
-  button.addEventListener("click", () => {
-    document.querySelectorAll(".nav").forEach(b => b.classList.remove("selected"));
-    button.classList.add("selected");
-    $("device").textContent = button.getAttribute("aria-label") === "Lyrics"
-      ? "♫ Sonora · Demo player"
-      : button.getAttribute("aria-label") + " · Coming soon";
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        url.searchParams.set(key, value);
+      }
+    });
+
+    const response = await fetch(url.toString(), {
+      headers: { "Accept": "application/json" }
+    });
+
+    if (!response.ok) {
+      throw new Error("Audius returned HTTP " + response.status);
+    }
+
+    const json = await response.json();
+
+    if (json.data === undefined) {
+      throw new Error("Unexpected response from Audius");
+    }
+
+    return json.data;
+  }
+
+  function makeTrackRow(track, onSelect) {
+    const button = document.createElement("button");
+    button.className = "track-row";
+    button.type = "button";
+
+    const image = document.createElement("img");
+    image.alt = "";
+    safeImage(image, artworkUrl(track));
+
+    const info = document.createElement("span");
+    info.className = "track-info";
+
+    const title = document.createElement("strong");
+    title.textContent = trackTitle(track);
+
+    const artist = document.createElement("small");
+    artist.textContent = artistName(track);
+
+    info.append(title, artist);
+
+    const play = document.createElement("span");
+    play.className = "play-small";
+    play.textContent = "▶";
+    play.setAttribute("aria-hidden", "true");
+
+    button.append(image, info, play);
+    button.addEventListener("click", () => onSelect(track));
+    return button;
+  }
+
+  function renderResults(list) {
+    const root = $("results");
+    root.replaceChildren();
+    tracks = list;
+
+    if (!list.length) {
+      const message = document.createElement("p");
+      message.className = "status";
+      message.textContent = "No tracks found. Try another search.";
+      root.appendChild(message);
+      return;
+    }
+
+    list.forEach(track => {
+      root.appendChild(makeTrackRow(track, selectedTrack => {
+        queue = tracks.slice();
+        currentIndex = queue.findIndex(item => item.id === selectedTrack.id);
+        renderQueue();
+        playTrack(selectedTrack);
+      }));
+    });
+  }
+
+  function renderQueue() {
+    const root = $("queue");
+    root.replaceChildren();
+    $("queueCount").textContent = queue.length + " TRACKS";
+
+    queue.forEach(track => {
+      root.appendChild(makeTrackRow(track, selectedTrack => {
+        currentIndex = queue.findIndex(item => item.id === selectedTrack.id);
+        playTrack(selectedTrack);
+      }));
+    });
+  }
+
+  async function loadTrending() {
+    setStatus("Finding music on Audius…");
+
+    try {
+      const data = await apiGet("/tracks/trending", { limit: 12 });
+      renderResults(Array.isArray(data) ? data : []);
+      $("resultsTitle").textContent = "Trending on Audius";
+      setStatus("Choose a track to start listening.");
+    } catch (error) {
+      console.error(error);
+      setStatus("Couldn't load Audius. Try again later.");
+      $("results").replaceChildren();
+    }
+  }
+
+  async function searchTracks(query) {
+    const term = query.trim();
+
+    if (!term) {
+      setStatus("Enter a song title or artist.");
+      return;
+    }
+
+    setStatus("Searching for “" + term + "”…");
+    $("results").replaceChildren();
+
+    try {
+      const data = await apiGet("/tracks/search", {
+        query: term,
+        limit: 15
+      });
+
+      const list = Array.isArray(data) ? data : [];
+      renderResults(list);
+      $("resultsTitle").textContent = "Search results";
+      setStatus(list.length
+        ? "Found " + list.length + " tracks."
+        : "No tracks found. Try a different search.");
+    } catch (error) {
+      console.error(error);
+      setStatus("Search failed. Audius may be temporarily unavailable.");
+    }
+  }
+
+  async function playTrack(track) {
+    if (!track || !track.id) {
+      setStatus("This track doesn't have a playable ID.");
+      return;
+    }
+
+    currentTrack = track;
+    isPlaying = false;
+    updatePlayButtons();
+    setStatus("Loading " + trackTitle(track) + "…");
+
+    const streamUrl = new URL(
+      API_BASE + "/tracks/" + encodeURIComponent(track.id) + "/stream"
+    );
+    streamUrl.searchParams.set("app_name", APP_NAME);
+
+    if (AUDIUS_API_KEY.trim()) {
+      streamUrl.searchParams.set("api_key", AUDIUS_API_KEY.trim());
+    }
+
+    audio.pause();
+    audio.src = streamUrl.toString();
+    audio.load();
+
+    $("songTitle").textContent = trackTitle(track);
+    $("songArtist").textContent = artistName(track);
+    $("miniTitle").textContent = trackTitle(track);
+    $("miniArtist").textContent = artistName(track);
+
+    const art = artworkUrl(track);
+    safeImage($("cover"), art);
+    safeImage($("miniCover"), art);
+
+    $("lyricsLines").replaceChildren();
+
+    const first = document.createElement("p");
+    first.className = "dim";
+    first.textContent = "Let the music find you";
+
+    const current = document.createElement("p");
+    current.className = "current";
+    current.textContent = trackTitle(track);
+
+    const last = document.createElement("p");
+    last.className = "dim";
+    last.textContent = "Sing along, in your own time.";
+
+    $("lyricsLines").append(first, current, last);
+    $("lyricsNote").textContent =
+      "Synchronized lyrics aren't included with this track. " +
+      "A separate authorized lyrics source is needed.";
+
+    updateFavoriteButton();
+
+    try {
+      await audio.play();
+      isPlaying = true;
+      setStatus("Now playing from Audius.");
+    } catch (error) {
+      console.error(error);
+      isPlaying = false;
+      setStatus("Tap Play to start, or try another track.");
+    }
+
+    updatePlayButtons();
+  }
+
+  function updatePlayButtons() {
+    $("playPause").textContent = isPlaying ? "Ⅱ" : "▶";
+    $("miniPlay").textContent = isPlaying ? "Ⅱ" : "▶";
+    $("playPause").setAttribute(
+      "aria-label", isPlaying ? "Pause" : "Play"
+    );
+  }
+
+  async function togglePlayback() {
+    if (!currentTrack) {
+      setStatus("Search for music and choose a track first.");
+      return;
+    }
+
+    try {
+      if (audio.paused) await audio.play();
+      else audio.pause();
+    } catch (error) {
+      console.error(error);
+      setStatus("Playback didn't start. Try selecting the track again.");
+    }
+  }
+
+  function playNext(step) {
+    if (!queue.length) return;
+
+    currentIndex = (currentIndex + step + queue.length) % queue.length;
+    playTrack(queue[currentIndex]);
+  }
+
+  function updateFavoriteButton() {
+    const saved = currentTrack &&
+      favoriteIds.has(String(currentTrack.id));
+
+    $("favorite").textContent = saved ? "♥" : "♡";
+    $("favorite").setAttribute("aria-pressed", saved ? "true" : "false");
+  }
+
+  $("searchForm").addEventListener("submit", event => {
+    event.preventDefault();
+    searchTracks($("searchInput").value);
   });
-});
 
-loadSong(0);
+  $("playPause").addEventListener("click", togglePlayback);
+  $("miniPlay").addEventListener("click", togglePlayback);
+  $("next").addEventListener("click", () => playNext(1));
+
+  $("previous").addEventListener("click", () => {
+    if (audio.currentTime > 3) audio.currentTime = 0;
+    else playNext(-1);
+  });
+
+  $("volume").addEventListener("input", event => {
+    audio.volume = Number(event.target.value);
+  });
+
+  audio.volume = Number($("volume").value);
+
+  $("seek").addEventListener("input", event => {
+    if (Number.isFinite(audio.duration) && audio.duration > 0) {
+      audio.currentTime =
+        (Number(event.target.value) / 100) * audio.duration;
+    }
+  });
+
+  audio.addEventListener("play", () => {
+    isPlaying = true;
+    updatePlayButtons();
+  });
+
+  audio.addEventListener("pause", () => {
+    isPlaying = false;
+    updatePlayButtons();
+  });
+
+  audio.addEventListener("ended", () => playNext(1));
+
+  audio.addEventListener("timeupdate", () => {
+    if (Number.isFinite(audio.duration) && audio.duration > 0) {
+      $("seek").value =
+        String((audio.currentTime / audio.duration) * 100);
+      $("elapsed").textContent = formatTime(audio.currentTime);
+      $("duration").textContent = formatTime(audio.duration);
+    }
+  });
+
+  audio.addEventListener("loadedmetadata", () => {
+    $("duration").textContent = formatTime(audio.duration);
+  });
+
+  audio.addEventListener("error", () => {
+    if (currentTrack) {
+      setStatus("This track couldn't be streamed. Try another track.");
+    }
+  });
+
+  $("favorite").addEventListener("click", () => {
+    if (!currentTrack) {
+      setStatus("Choose a track before saving it.");
+      return;
+    }
+
+    const id = String(currentTrack.id);
+
+    if (favoriteIds.has(id)) favoriteIds.delete(id);
+    else favoriteIds.add(id);
+
+    updateFavoriteButton();
+    setStatus("Favorite updated for this session.");
+  });
+
+  $("showQueue").addEventListener("click", () => {
+    $("queueSection").scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  });
+
+  loadTrending();
+})();
 </script>
 </body>
-</html>
+</h
